@@ -29,6 +29,11 @@
     <dependency> <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
         <version>2.17.1</version> </dependency>
+    <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>2.17.1</version> <!-- Use your matching Jackson version -->
+    </dependency>
     <!-- Lombok -->
     <dependency> <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
