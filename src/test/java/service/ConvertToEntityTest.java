@@ -30,7 +30,7 @@ public class ConvertToEntityTest {
         Movie movie = convertToEntity.convertToMovieEntity(movieDTO);
 
         //Assert
-        assertEquals(123L, movie.getId());
+        assertEquals(123L, Long.valueOf(movie.getId()));
         assertEquals("Inception", movie.getTitle());
         assertEquals(LocalDate.of(2010, 7, 16), movie.getReleaseDate());
         assertEquals(8.4, movie.getVoteAverage());
