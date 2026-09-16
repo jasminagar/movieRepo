@@ -23,6 +23,10 @@ public class MovieService {
         this.moviedao = new Moviedao();
     }
 
+    public List<Movie> getAllMoviesFromDatabase(){
+        return moviedao.findAllMovies();
+    }
+
     public void fetchAndSaveAllDanishMovies() {
         ConvertToEntity convertToEntity = new ConvertToEntity();
 

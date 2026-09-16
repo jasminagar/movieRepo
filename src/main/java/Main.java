@@ -12,6 +12,7 @@ import service.ApiReader;
 import service.MovieService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,7 +21,19 @@ public class Main {
 
         MovieService movieService = new MovieService();
 
-        movieService.fetchAndSaveAllDanishMovies();
+//        List<Movie> movies = movieService.getAllMoviesFromDatabase();
+//
+//        for (Movie movie : movies) {
+//            System.out.println(
+//                    movie.getId() + " | " +
+//                            movie.getTitle() + " | " +
+//                            movie.getReleaseDate() + " | " +
+//                            movie.getVoteAverage() + " | " +
+//                            movie.getPopularity()
+//            );
+//        }
+
+  //      movieService.fetchAndSaveAllDanishMovies();
 
 //        Movie movie = new Movie();
 //
