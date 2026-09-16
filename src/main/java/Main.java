@@ -2,12 +2,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import config.HibernateConfig;
+import dao.Moviedao;
 import dto.MovieDTO;
 import dto.MovieResponseDTO;
 import entities.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import service.ApiReader;
+import service.MovieService;
 
 import java.time.LocalDate;
 
@@ -15,6 +17,10 @@ public class Main {
     public static void main(String[] args) {
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
+
+        MovieService movieService = new MovieService();
+
+        movieService.fetchAndSaveAllDanishMovies();
 
 //        Movie movie = new Movie();
 //
