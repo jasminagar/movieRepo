@@ -22,7 +22,7 @@ public class Movie {
     private double voteAverage;
     private double popularity;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_actor",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -30,11 +30,15 @@ public class Movie {
     )
     private List<Actor> actors = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "director_id")
-    private Director director;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "movie_director",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "director_id")
+    )
+    private List<Director> directors = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "movie_genre",
             joinColumns = @JoinColumn(name = "movie_id"),

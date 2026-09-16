@@ -16,7 +16,7 @@ public class Moviedao {
 
         try{
             em.getTransaction().begin();
-            em.persist(movie);
+            em.merge(movie);
             em.getTransaction().commit();
         }finally {
             em.close();

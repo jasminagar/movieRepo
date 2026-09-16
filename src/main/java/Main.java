@@ -5,6 +5,8 @@ import config.HibernateConfig;
 import dao.Moviedao;
 import dto.MovieDTO;
 import dto.MovieResponseDTO;
+import entities.Actor;
+import entities.Director;
 import entities.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -16,12 +18,53 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
-        EntityManager em = emf.createEntityManager();
-
         MovieService movieService = new MovieService();
 
-//        List<Movie> movies = movieService.getAllMoviesFromDatabase();
+       // movieService.testMovieDetails(Long.valueOf(1503074));
+        // 1. Hent film fra TMDb og gem dem i databasen
+      movieService.fetchAndSaveAllDanishMovies();
+//
+      // 2. Hent alle film fra databasen
+        List<Movie> movies =
+                movieService.getAllMoviesFromDatabase();
+
+        System.out.println("===== MOVIES =====");
+
+        for (Movie movie : movies) {
+
+            System.out.println();
+            System.out.println("Movie: " + movie.getTitle());
+
+            // Actors
+            System.out.println("Actors:");
+
+            for (Actor actor : movie.getActors()) {
+                System.out.println(
+                        " - " + actor.getName()
+                );
+            }
+
+            // Director
+            System.out.println("Director:");
+
+            if (movie.getDirectors() != null && !movie.getDirectors().isEmpty()) {
+
+                for (Director director : movie.getDirectors()) {
+                    System.out.println(
+                            " - " + director.getName()
+                    );
+                }
+
+            } else {
+                System.out.println(" - No director found");
+            }
+        }
+//        EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
+//        EntityManager em = emf.createEntityManager();
+//
+//        MovieService movieService = new MovieService();
+//
+//     List<Movie> movies = movieService.getAllMoviesFromDatabase();
 //
 //        for (Movie movie : movies) {
 //            System.out.println(

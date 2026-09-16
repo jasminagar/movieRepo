@@ -14,11 +14,10 @@ import java.util.List;
 public class Director {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany(mappedBy = "director")
+    @ManyToMany(mappedBy = "directors")
     private List<Movie> movies = new ArrayList<>();
 }
