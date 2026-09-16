@@ -16,22 +16,22 @@ public class Main {
         EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
 
-        Movie movie = new Movie();
-
-        movie.setId(223456L);
-        movie.setTitle("Test Movie");
-        movie.setReleaseDate(LocalDate.of(2025, 1, 1));
-        movie.setVoteAverage(8.5);
-        movie.setPopularity(100.0);
-
-        em.getTransaction().begin();
-
-        em.persist(movie);
-
-        em.getTransaction().commit();
-
-        em.close();
-        emf.close();
+//        Movie movie = new Movie();
+//
+//        movie.setId(223456L);
+//        movie.setTitle("Test Movie");
+//        movie.setReleaseDate(LocalDate.of(2025, 1, 1));
+//        movie.setVoteAverage(8.5);
+//        movie.setPopularity(100.0);
+//
+//        em.getTransaction().begin();
+//
+//        em.persist(movie);
+//
+//        em.getTransaction().commit();
+//
+//        em.close();
+//        emf.close();
 
 
 //        ApiReader apiReader = new ApiReader();
