@@ -2,9 +2,9 @@ package dao;
 
 import config.HibernateConfig;
 import entities.Movie;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,28 +21,27 @@ public class MoviedaoTest {
 
     @BeforeAll
     static void setUpEmf() {
-
         emf = HibernateConfig.getEntityManagerFactory();
-
-        EntityManager em = emf.createEntityManager();
-
-        try {
-            em.getTransaction().begin();
-
-            em.createQuery(
-                    "DELETE FROM Movie"
-            ).executeUpdate();
-
-            em.getTransaction().commit();
-
-        } finally {
-            em.close();
-        }
     }
 
     @BeforeEach
     void setUpMovieDao() {
         moviedao = new Moviedao();
+    }
+
+    /*
+     * Fjerner kun testfilmene efter hver test.
+     * De øvrige film i databasen bliver ikke slettet.
+     */
+    @AfterEach
+    void cleanUpTestMovies() {
+
+        moviedao.deleteMovie(999991L);
+        moviedao.deleteMovie(999992L);
+        moviedao.deleteMovie(999993L);
+        moviedao.deleteMovie(999994L);
+        moviedao.deleteMovie(999995L);
+        moviedao.deleteMovie(999996L);
     }
 
     @AfterAll
@@ -94,8 +93,6 @@ public class MoviedaoTest {
                 100.0,
                 savedMovie.getPopularity()
         );
-
-        moviedao.deleteMovie(999991L);
     }
 
     @Test
@@ -127,8 +124,6 @@ public class MoviedaoTest {
                 "Find Test",
                 foundMovie.getTitle()
         );
-
-        moviedao.deleteMovie(999992L);
     }
 
     @Test
@@ -161,10 +156,19 @@ public class MoviedaoTest {
                 moviedao.findAllMovies();
 
         assertNotNull(movies);
-        assertTrue(movies.size() >= 2);
 
-        moviedao.deleteMovie(999993L);
-        moviedao.deleteMovie(999994L);
+        boolean containsMovieOne = movies.stream()
+                .anyMatch(movie ->
+                        movie.getId().equals(999993L)
+                );
+
+        boolean containsMovieTwo = movies.stream()
+                .anyMatch(movie ->
+                        movie.getId().equals(999994L)
+                );
+
+        assertTrue(containsMovieOne);
+        assertTrue(containsMovieTwo);
     }
 
     @Test
@@ -203,7 +207,11 @@ public class MoviedaoTest {
                 updatedMovie.getReleaseDate()
         );
 
-        // Disse værdier skal forblive uændrede
+        /*
+         * Vote average og popularity skal
+         * ikke blive ændret.
+         */
+
         assertEquals(
                 6.0,
                 updatedMovie.getVoteAverage()
@@ -213,8 +221,6 @@ public class MoviedaoTest {
                 40.0,
                 updatedMovie.getPopularity()
         );
-
-        moviedao.deleteMovie(999995L);
     }
 
     @Test
