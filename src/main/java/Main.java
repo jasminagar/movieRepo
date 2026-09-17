@@ -7,6 +7,7 @@ import dto.MovieDTO;
 import dto.MovieResponseDTO;
 import entities.Actor;
 import entities.Director;
+import entities.Genre;
 import entities.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -79,6 +80,12 @@ public class Main {
                     System.out.println(
                             " - " + director.getName()
                     );
+                }
+
+                if (movie.getGenres() != null && !movie.getGenres().isEmpty()){
+                    for (Genre genre : movie.getGenres()){
+                        System.out.println(" - " + genre.getName());
+                    }
                 }
 
             } else {

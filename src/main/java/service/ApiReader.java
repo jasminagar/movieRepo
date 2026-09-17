@@ -56,4 +56,31 @@ public class ApiReader {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-}}
+}
+
+    public String getGenres() {
+
+        String url = "https://api.themoviedb.org/3/genre/movie/list"
+                + "?api_key=" + apiKey
+                + "&language=en-US";
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response =
+                    httpClient.send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
+
+            return response.body();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}

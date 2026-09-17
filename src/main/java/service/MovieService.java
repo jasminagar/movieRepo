@@ -4,10 +4,12 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.ActorDao;
 import dao.DirectorDao;
+import dao.GenreDao;
 import dao.Moviedao;
 import dto.*;
 import entities.Actor;
 import entities.Director;
+import entities.Genre;
 import entities.Movie;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class MovieService {
     private final Moviedao moviedao;
     private final ActorDao actorDao;
     private final DirectorDao directorDao;
+    private final GenreDao genreDao;
 
     public MovieService() {
         this.apiReader = new ApiReader();
@@ -34,6 +37,7 @@ public class MovieService {
         this.moviedao = new Moviedao();
         this.actorDao = new ActorDao();
         this.directorDao = new DirectorDao();
+        this.genreDao = new GenreDao();
     }
 
     public void testMovieDetails(Long movieId) {
@@ -72,11 +76,33 @@ public class MovieService {
         return moviedao.findAllMovies();
     }
 
+    public List<GenreDTO> getAllGenres() {
+
+        String json = apiReader.getGenres();
+
+        try {
+            GenreResponseDTO response =
+                    objectMapper.readValue(
+                            json,
+                            GenreResponseDTO.class
+                    );
+
+            return response.getGenres();
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Could not convert genre JSON to DTO",
+                    e
+            );
+        }
+    }
+
     public void fetchAndSaveAllDanishMovies() {
 
         ConvertToEntity convertToEntity = new ConvertToEntity();
 
         List<MovieDTO> movies = getAllDanishMovies();
+        List<GenreDTO> genres = getAllGenres();
 
         ExecutorService executor =
                 Executors.newFixedThreadPool(5);
@@ -115,6 +141,8 @@ public class MovieService {
 
                 addDirector(movie, details);
 
+                addGenres(movie, movieDTO, genres);
+
                 moviedao.saveMovie(movie);
             }
 
@@ -127,6 +155,49 @@ public class MovieService {
 
         } finally {
             executor.shutdown();
+        }
+    }
+
+    public void addGenres(
+            Movie movie,
+            MovieDTO movieDTO,
+            List<GenreDTO> genres) {
+
+        if (movieDTO.getGenreIds() == null) {
+            return;
+        }
+
+        for (Integer genreId : movieDTO.getGenreIds()) {
+
+            for (GenreDTO genreDTO : genres) {
+
+                if (genreDTO.getId().equals(genreId.longValue())) {
+
+                    Genre genre =
+                            genreDao.getGenreById(
+                                    genreDTO.getId()
+                            );
+
+                    if (genre == null) {
+
+                        genre = new Genre();
+
+                        genre.setId(
+                                genreDTO.getId()
+                        );
+
+                        genre.setName(
+                                genreDTO.getName()
+                        );
+
+                        genreDao.saveGenre(genre);
+                    }
+
+                    movie.getGenres().add(genre);
+
+                    break;
+                }
+            }
         }
     }
 
@@ -198,6 +269,11 @@ public class MovieService {
             }
         }
     }
+
+    public void addGenre(Movie movie, MovieDetailsDTO movieDetailsDTO){
+
+    }
+
 
     public void addActors(
             Movie movie,
