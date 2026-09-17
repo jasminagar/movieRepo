@@ -1,5 +1,4 @@
-
-        package service;
+package service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dao.ActorDao;
@@ -12,6 +11,7 @@ import entities.Director;
 import entities.Genre;
 import entities.Movie;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -29,6 +29,7 @@ public class MovieService {
     private final GenreDao genreDao;
 
     public MovieService() {
+
         this.apiReader = new ApiReader();
 
         this.objectMapper = new ObjectMapper();
@@ -58,7 +59,8 @@ public class MovieService {
 
     public void testMovieDetails(Long movieId) {
 
-        String json = apiReader.getMovieDetails(movieId);
+        String json =
+                apiReader.getMovieDetails(movieId);
 
         try {
             MovieDetailsDTO details =
@@ -67,19 +69,28 @@ public class MovieService {
                             MovieDetailsDTO.class
                     );
 
-            System.out.println("Title: " + details.getTitle());
-            System.out.println("Credits: " + details.getCredits());
+            System.out.println(
+                    "Title: " + details.getTitle()
+            );
+
+            System.out.println(
+                    "Credits: " + details.getCredits()
+            );
 
             if (details.getCredits() != null) {
 
                 System.out.println(
-                        "Cast: " +
-                                details.getCredits().getCast().size()
+                        "Cast: "
+                                + details.getCredits()
+                                .getCast()
+                                .size()
                 );
 
                 System.out.println(
-                        "Crew: " +
-                                details.getCredits().getCrew().size()
+                        "Crew: "
+                                + details.getCredits()
+                                .getCrew()
+                                .size()
                 );
             }
 
@@ -87,6 +98,32 @@ public class MovieService {
             throw new RuntimeException(e);
         }
     }
+
+
+    /*
+     * CREATE
+     * Tilføjer en ny film til databasen.
+     */
+
+    public void addMovie(Movie movie) {
+        moviedao.saveMovie(movie);
+    }
+
+
+    /*
+     * READ
+     * Finder en film ud fra dens ID.
+     */
+
+    public Movie getMovieById(Long id) {
+        return moviedao.findMovieById(id);
+    }
+
+
+    /*
+     * READ
+     * Henter alle film fra databasen.
+     */
 
     public List<Movie> getAllMoviesFromDatabase() {
         return moviedao.findAllMovies();
@@ -113,26 +150,80 @@ public class MovieService {
         }
     }
 
+
+    /*
+     * SEARCH
+     * Søger efter film ud fra deres titel.
+     */
+
+    public List<Movie> searchMoviesByTitle(
+            String searchString
+    ) {
+
+        return moviedao.searchMoviesByTitle(
+                searchString
+        );
+    }
+
+
+    /*
+     * UPDATE
+     * Opdaterer filmens titel og udgivelsesdato.
+     */
+
+    public void updateMovie(
+            Long id,
+            String newTitle,
+            LocalDate newReleaseDate
+    ) {
+
+        moviedao.updateMovie(
+                id,
+                newTitle,
+                newReleaseDate
+        );
+    }
+
+
+    /*
+     * DELETE
+     * Sletter en film ud fra dens ID.
+     */
+
+    public void deleteMovie(Long id) {
+        moviedao.deleteMovie(id);
+    }
+
+
+    /*
+     * Henter danske film fra TMDb
+     * og gemmer dem i databasen.
+     */
+
     public void fetchAndSaveAllDanishMovies() {
 
-        ConvertToEntity convertToEntity = new ConvertToEntity();
+        ConvertToEntity convertToEntity =
+                new ConvertToEntity();
 
-        List<MovieDTO> movies = getAllDanishMovies();
+        List<MovieDTO> movies =
+                getAllDanishMovies();
         List<GenreDTO> genres = getAllGenres();
 
         ExecutorService executor =
                 Executors.newFixedThreadPool(5);
 
         try {
-
-            List<Future<MovieDetailsDTO>> futures = new ArrayList<>();
+            List<Future<MovieDetailsDTO>> futures =
+                    new ArrayList<>();
 
             for (MovieDTO movieDTO : movies) {
 
                 Callable<MovieDetailsDTO> task = () -> {
 
                     String json =
-                            apiReader.getMovieDetails(movieDTO.getId());
+                            apiReader.getMovieDetails(
+                                    movieDTO.getId()
+                            );
 
                     return objectMapper.readValue(
                             json,
@@ -140,15 +231,21 @@ public class MovieService {
                     );
                 };
 
-                futures.add(executor.submit(task));
+                futures.add(
+                        executor.submit(task)
+                );
             }
 
             for (int i = 0; i < movies.size(); i++) {
 
-                MovieDTO movieDTO = movies.get(i);
+                MovieDTO movieDTO =
+                        movies.get(i);
 
                 Movie movie =
-                        convertToEntity.convertToMovieEntity(movieDTO);
+                        convertToEntity
+                                .convertToMovieEntity(
+                                        movieDTO
+                                );
 
                 MovieDetailsDTO details =
                         futures.get(i).get();
@@ -217,15 +314,22 @@ public class MovieService {
         }
     }
 
+
+    /*
+     * Henter alle danske film fra TMDb.
+     */
+
     public List<MovieDTO> getAllDanishMovies() {
 
-        List<MovieDTO> movies = new ArrayList<>();
+        List<MovieDTO> movies =
+                new ArrayList<>();
 
         int page = 1;
         int totalPages;
 
         do {
-            String json = apiReader.getAllDataFromApi(page);
+            String json =
+                    apiReader.getAllDataFromApi(page);
 
             try {
                 MovieResponseDTO response =
@@ -234,9 +338,13 @@ public class MovieService {
                                 MovieResponseDTO.class
                         );
 
-                movies.addAll(response.getResults());
+                movies.addAll(
+                        response.getResults()
+                );
 
-                totalPages = response.getTotalPages();
+                totalPages =
+                        response.getTotalPages();
+
                 page++;
 
             } catch (Exception e) {
@@ -252,19 +360,28 @@ public class MovieService {
         return movies;
     }
 
+
+    /*
+     * Tilføjer instruktører til en film.
+     */
+
     public void addDirector(
             Movie movie,
-            MovieDetailsDTO details) {
+            MovieDetailsDTO details
+    ) {
 
-        if (details.getCredits() == null ||
-                details.getCredits().getCrew() == null) {
+        if (details.getCredits() == null
+                || details.getCredits().getCrew() == null) {
+
             return;
         }
 
-        for (CrewMemberDTO crewMember :
-                details.getCredits().getCrew()) {
+        for (CrewMemberDTO crewMember
+                : details.getCredits().getCrew()) {
 
-            if ("Director".equals(crewMember.getJob())) {
+            if ("Director".equals(
+                    crewMember.getJob()
+            )) {
 
                 Director director =
                         directorDao.getDirectorById(
@@ -275,16 +392,30 @@ public class MovieService {
 
                     director = new Director();
 
-                    director.setId(crewMember.getId());
-                    director.setName(crewMember.getName());
+                    director.setId(
+                            crewMember.getId()
+                    );
 
-                    directorDao.saveDirector(director);
+                    director.setName(
+                            crewMember.getName()
+                    );
+
+                    directorDao.saveDirector(
+                            director
+                    );
                 }
 
-                movie.getDirectors().add(director);
+                movie.getDirectors().add(
+                        director
+                );
             }
         }
     }
+
+
+    /*
+     * Tilføjer skuespillere til en film.
+     */
 
     public void addGenre(Movie movie, MovieDetailsDTO movieDetailsDTO){
 
@@ -293,25 +424,34 @@ public class MovieService {
 
     public void addActors(
             Movie movie,
-            MovieDetailsDTO details) {
+            MovieDetailsDTO details
+    ) {
 
-        if (details.getCredits() == null ||
-                details.getCredits().getCast() == null) {
+        if (details.getCredits() == null
+                || details.getCredits().getCast() == null) {
+
             return;
         }
 
-        for (ActorDTO actorDTO :
-                details.getCredits().getCast()) {
+        for (ActorDTO actorDTO
+                : details.getCredits().getCast()) {
 
             Actor actor =
-                    actorDao.getActorById(actorDTO.getId());
+                    actorDao.getActorById(
+                            actorDTO.getId()
+                    );
 
             if (actor == null) {
 
                 actor = new Actor();
 
-                actor.setId(actorDTO.getId());
-                actor.setName(actorDTO.getName());
+                actor.setId(
+                        actorDTO.getId()
+                );
+
+                actor.setName(
+                        actorDTO.getName()
+                );
 
                 actorDao.saveActor(actor);
 
@@ -325,4 +465,3 @@ public class MovieService {
         }
     }
 }
-

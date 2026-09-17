@@ -31,8 +31,9 @@ public class MoviedaoTest {
 
     /*
      * Fjerner kun testfilmene efter hver test.
-     * De øvrige film i databasen bliver ikke slettet.
+     * De normale film i databasen bliver bevaret.
      */
+
     @AfterEach
     void cleanUpTestMovies() {
 
@@ -42,6 +43,9 @@ public class MoviedaoTest {
         moviedao.deleteMovie(999994L);
         moviedao.deleteMovie(999995L);
         moviedao.deleteMovie(999996L);
+        moviedao.deleteMovie(999997L);
+        moviedao.deleteMovie(999998L);
+        moviedao.deleteMovie(999999L);
     }
 
     @AfterAll
@@ -56,9 +60,11 @@ public class MoviedaoTest {
 
         movie.setId(999991L);
         movie.setTitle("Test Movie");
+
         movie.setReleaseDate(
                 LocalDate.of(2025, 1, 1)
         );
+
         movie.setVoteAverage(8.5);
         movie.setPopularity(100.0);
 
@@ -102,9 +108,11 @@ public class MoviedaoTest {
 
         movie.setId(999992L);
         movie.setTitle("Find Test");
+
         movie.setReleaseDate(
                 LocalDate.of(2024, 5, 10)
         );
+
         movie.setVoteAverage(7.5);
         movie.setPopularity(80.0);
 
@@ -133,21 +141,27 @@ public class MoviedaoTest {
 
         movie1.setId(999993L);
         movie1.setTitle("Movie One");
+
         movie1.setReleaseDate(
                 LocalDate.of(2024, 1, 1)
         );
+
         movie1.setVoteAverage(7.0);
         movie1.setPopularity(50.0);
+
 
         Movie movie2 = new Movie();
 
         movie2.setId(999994L);
         movie2.setTitle("Movie Two");
+
         movie2.setReleaseDate(
                 LocalDate.of(2024, 2, 1)
         );
+
         movie2.setVoteAverage(8.0);
         movie2.setPopularity(60.0);
+
 
         moviedao.saveMovie(movie1);
         moviedao.saveMovie(movie2);
@@ -157,15 +171,19 @@ public class MoviedaoTest {
 
         assertNotNull(movies);
 
-        boolean containsMovieOne = movies.stream()
-                .anyMatch(movie ->
-                        movie.getId().equals(999993L)
-                );
+        boolean containsMovieOne =
+                movies.stream()
+                        .anyMatch(movie ->
+                                movie.getId()
+                                        .equals(999993L)
+                        );
 
-        boolean containsMovieTwo = movies.stream()
-                .anyMatch(movie ->
-                        movie.getId().equals(999994L)
-                );
+        boolean containsMovieTwo =
+                movies.stream()
+                        .anyMatch(movie ->
+                                movie.getId()
+                                        .equals(999994L)
+                        );
 
         assertTrue(containsMovieOne);
         assertTrue(containsMovieTwo);
@@ -178,9 +196,11 @@ public class MoviedaoTest {
 
         movie.setId(999995L);
         movie.setTitle("Old Title");
+
         movie.setReleaseDate(
                 LocalDate.of(2023, 1, 1)
         );
+
         movie.setVoteAverage(6.0);
         movie.setPopularity(40.0);
 
@@ -207,11 +227,6 @@ public class MoviedaoTest {
                 updatedMovie.getReleaseDate()
         );
 
-        /*
-         * Vote average og popularity skal
-         * ikke blive ændret.
-         */
-
         assertEquals(
                 6.0,
                 updatedMovie.getVoteAverage()
@@ -230,9 +245,11 @@ public class MoviedaoTest {
 
         movie.setId(999996L);
         movie.setTitle("Delete Test");
+
         movie.setReleaseDate(
                 LocalDate.of(2022, 1, 1)
         );
+
         movie.setVoteAverage(5.0);
         movie.setPopularity(20.0);
 
@@ -249,5 +266,97 @@ public class MoviedaoTest {
                 moviedao.findMovieById(999996L);
 
         assertNull(deletedMovie);
+    }
+
+    @Test
+    void searchMoviesByTitleShouldIgnoreCaseAndReturnAllMatches() {
+
+        Movie movie1 = new Movie();
+
+        movie1.setId(999997L);
+
+        movie1.setTitle(
+                "The ZephyrSearchToken Movie"
+        );
+
+        movie1.setReleaseDate(
+                LocalDate.of(2024, 1, 1)
+        );
+
+        movie1.setVoteAverage(7.0);
+        movie1.setPopularity(50.0);
+
+
+        Movie movie2 = new Movie();
+
+        movie2.setId(999998L);
+
+        movie2.setTitle(
+                "ZephyrSearchToken Returns"
+        );
+
+        movie2.setReleaseDate(
+                LocalDate.of(2025, 1, 1)
+        );
+
+        movie2.setVoteAverage(8.0);
+        movie2.setPopularity(60.0);
+
+
+        Movie movie3 = new Movie();
+
+        movie3.setId(999999L);
+
+        movie3.setTitle(
+                "Unrelated Test Movie"
+        );
+
+        movie3.setReleaseDate(
+                LocalDate.of(2026, 1, 1)
+        );
+
+        movie3.setVoteAverage(6.0);
+        movie3.setPopularity(40.0);
+
+
+        moviedao.saveMovie(movie1);
+        moviedao.saveMovie(movie2);
+        moviedao.saveMovie(movie3);
+
+
+        List<Movie> searchResults =
+                moviedao.searchMoviesByTitle(
+                        "zEpHyRsEaRcHtOkEn"
+                );
+
+
+        assertEquals(
+                2,
+                searchResults.size()
+        );
+
+        assertTrue(
+                searchResults.stream()
+                        .anyMatch(movie ->
+                                movie.getId()
+                                        .equals(999997L)
+                        )
+        );
+
+        assertTrue(
+                searchResults.stream()
+                        .anyMatch(movie ->
+                                movie.getId()
+                                        .equals(999998L)
+                        )
+        );
+
+        assertFalse(
+                searchResults.stream()
+                        .anyMatch(movie ->
+                                movie.getId()
+                                        .equals(999999L)
+                        )
+        );
     }
 }
