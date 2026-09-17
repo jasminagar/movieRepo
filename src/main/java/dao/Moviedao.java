@@ -13,7 +13,75 @@ public class Moviedao {
     EntityManagerFactory emf =
             HibernateConfig.getEntityManagerFactory();
 
-    // CREATE – gemmer en ny film
+    public double getAverageRating(){
+        EntityManager em = emf.createEntityManager();
+
+        try{
+            Double avg = em.createQuery("select avg(m.voteAverage) from Movie m",
+                    Double.class)
+                    .getSingleResult();
+
+            return avg;
+        } finally {
+            em.close();
+        }
+
+    }
+
+    public List<Movie> getTop10HighestRated() {
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "select m from Movie m " +
+                                    "order by m.voteAverage desc",
+                            Movie.class
+                    )
+                    .setMaxResults(10)
+                    .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Movie> getTop10LowestRated() {
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "select m from Movie m " +
+                                    "order by m.voteAverage asc",
+                            Movie.class
+                    )
+                    .setMaxResults(10)
+                    .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Movie> getTop10MostPopular() {
+
+        EntityManager em = emf.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "select m from Movie m " +
+                                    "order by m.popularity desc",
+                            Movie.class
+                    )
+                    .setMaxResults(10)
+                    .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
     public void saveMovie(Movie movie) {
         EntityManager em = emf.createEntityManager();
 
@@ -28,7 +96,6 @@ public class Moviedao {
         }
     }
 
-    // READ – finder en film ud fra dens ID
     public Movie findMovieById(Long id) {
         EntityManager em = emf.createEntityManager();
 
@@ -39,7 +106,6 @@ public class Moviedao {
         }
     }
 
-    // READ – henter alle film fra databasen
     public List<Movie> findAllMovies() {
         EntityManager em = emf.createEntityManager();
 
@@ -53,7 +119,6 @@ public class Moviedao {
         }
     }
 
-    // UPDATE – ændrer filmens titel og udgivelsesdato
     public void updateMovie(
             Long id,
             String newTitle,
@@ -77,7 +142,6 @@ public class Moviedao {
         }
     }
 
-    // DELETE – sletter en film ud fra dens ID
     public void deleteMovie(Long id) {
         EntityManager em = emf.createEntityManager();
 

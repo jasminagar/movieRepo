@@ -40,6 +40,22 @@ public class MovieService {
         this.genreDao = new GenreDao();
     }
 
+    public double getAverageRating() {
+        return moviedao.getAverageRating();
+    }
+
+    public List<Movie> getTop10HighestRated() {
+        return moviedao.getTop10HighestRated();
+    }
+
+    public List<Movie> getTop10LowestRated() {
+        return moviedao.getTop10LowestRated();
+    }
+
+    public List<Movie> getTop10MostPopular() {
+        return moviedao.getTop10MostPopular();
+    }
+
     public void testMovieDetails(Long movieId) {
 
         String json = apiReader.getMovieDetails(movieId);

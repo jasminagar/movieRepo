@@ -23,78 +23,112 @@ public class Main {
 
         MovieService movieService = new MovieService();
 
-        // movieService.testMovieDetails(Long.valueOf(1503074));
+        double average = movieService.getAverageRating();
 
+        System.out.println("Average rating: " + average);
 
-        /*
-         * 1. Hent film fra TMDb og gem dem i databasen
-         */
+        System.out.println("\nTop 10 highest rated:");
 
-        movieService.fetchAndSaveAllDanishMovies();
-
-
-        /*
-         * 2. Hent alle film fra databasen
-         */
-
-        List<Movie> movies =
-                movieService.getAllMoviesFromDatabase();
-
-        System.out.println("===== MOVIES =====");
-
-        for (Movie movie : movies) {
-
-            System.out.println();
-
+        for (Movie movie : movieService.getTop10HighestRated()) {
             System.out.println(
-                    "Movie: " + movie.getTitle()
+                    movie.getTitle() +
+                            " - " +
+                            movie.getVoteAverage()
             );
-
-
-            /*
-             * Actors
-             */
-
-            System.out.println("Actors:");
-
-            for (Actor actor : movie.getActors()) {
-
-                System.out.println(
-                        " - " + actor.getName()
-                );
-            }
-
-
-            /*
-             * Directors
-             */
-
-            System.out.println("Director:");
-
-            if (movie.getDirectors() != null
-                    && !movie.getDirectors().isEmpty()) {
-
-                for (Director director
-                        : movie.getDirectors()) {
-
-                    System.out.println(
-                            " - " + director.getName()
-                    );
-                }
-
-                if (movie.getGenres() != null && !movie.getGenres().isEmpty()){
-                    for (Genre genre : movie.getGenres()){
-                        System.out.println(" - " + genre.getName());
-                    }
-                }
-
-            } else {
-                System.out.println(
-                        " - No director found"
-                );
-            }
         }
 
+        System.out.println("\nTop 10 lowest rated:");
+
+        for (Movie movie : movieService.getTop10LowestRated()) {
+            System.out.println(
+                    movie.getTitle() +
+                            " - " +
+                            movie.getVoteAverage()
+            );
+        }
+
+        System.out.println("\nTop 10 most popular:");
+
+        for (Movie movie : movieService.getTop10MostPopular()) {
+            System.out.println(
+                    movie.getTitle() +
+                            " - " +
+                            movie.getPopularity()
+            );
+        }
+
+//        // movieService.testMovieDetails(Long.valueOf(1503074));
+//
+//
+//        /*
+//         * 1. Hent film fra TMDb og gem dem i databasen
+//         */
+//
+//        movieService.fetchAndSaveAllDanishMovies();
+//
+//
+//        /*
+//         * 2. Hent alle film fra databasen
+//         */
+//
+//        List<Movie> movies =
+//                movieService.getAllMoviesFromDatabase();
+//
+//        System.out.println("===== MOVIES =====");
+//
+//        for (Movie movie : movies) {
+//
+//            System.out.println();
+//
+//            System.out.println(
+//                    "Movie: " + movie.getTitle()
+//            );
+//
+//
+//            /*
+//             * Actors
+//             */
+//
+//            System.out.println("Actors:");
+//
+//            for (Actor actor : movie.getActors()) {
+//
+//                System.out.println(
+//                        " - " + actor.getName()
+//                );
+//            }
+//
+//
+//            /*
+//             * Directors
+//             */
+//
+//            System.out.println("Director:");
+//
+//            if (movie.getDirectors() != null
+//                    && !movie.getDirectors().isEmpty()) {
+//
+//                for (Director director
+//                        : movie.getDirectors()) {
+//
+//                    System.out.println(
+//                            " - " + director.getName()
+//                    );
+//                }
+//
+//                if (movie.getGenres() != null && !movie.getGenres().isEmpty()){
+//                    for (Genre genre : movie.getGenres()){
+//                        System.out.println(" - " + genre.getName());
+//                    }
+//                }
+//
+//            } else {
+//                System.out.println(
+//                        " - No director found"
+//                );
+//            }
+//        }
+//
 
 //        EntityManagerFactory emf =
 //                HibernateConfig.getEntityManagerFactory();
